@@ -3,14 +3,28 @@
 import SwiftUI
 
 struct ContentView: View {
+    @State var originalImage: CGImage?
+    @State var maskImage: CGImage?
+    @State var filteredImage: CGImage?
+    
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundColor(.accentColor)
-            Text("Hello, world!")
+        ScrollView {
+            VStack {
+                ImagePicker("Select Image", image: $originalImage)
+                ScaledImage(cgImage: originalImage)
+                ScaledImage(cgImage: maskImage)
+                ScaledImage(cgImage: filteredImage)
+            }
         }
-        .padding()
+    }
+
+    @ViewBuilder
+    func ScaledImage(_ label: String = "", cgImage: CGImage?) -> some View {
+        if let cgImage {
+            Image(cgImage, scale: 1, label: Text(label))
+                .resizable()
+                .scaledToFit()
+        }
     }
 }
 
