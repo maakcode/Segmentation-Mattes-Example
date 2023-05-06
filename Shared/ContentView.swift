@@ -5,18 +5,21 @@ import Vision
 import CoreImage
 
 struct ContentView: View {
-    @State var originalImage: CGImage?
-    @State var maskImage: CGImage?
-    @State var filteredImage: CGImage?
+    let axes: Axis.Set
+    @State private var originalImage: CGImage?
+    @State private var maskImage: CGImage?
+    @State private var filteredImage: CGImage?
     
     var body: some View {
-        ScrollView {
-            VStack {
-                ImagePicker("Select Image", image: $originalImage)
-                    .padding()
-                ScaledImage(cgImage: originalImage)
-                ScaledImage(cgImage: maskImage)
-                ScaledImage(cgImage: filteredImage)
+        VStack {
+            ImagePicker("Select Image", image: $originalImage)
+                .padding()
+            ScrollView(axes) {
+                Stack(axes) {
+                    ScaledImage(cgImage: originalImage)
+                    ScaledImage(cgImage: maskImage)
+                    ScaledImage(cgImage: filteredImage)
+                }
             }
         }
         .onChange(of: originalImage) { newImage in
@@ -26,6 +29,19 @@ struct ContentView: View {
                 maskImage = mask
                 filteredImage = filtered
             }
+        }
+    }
+
+    init(axes: Axis.Set = .vertical) {
+        self.axes = axes
+    }
+
+    @ViewBuilder
+    func Stack(_ axes: Axis.Set = .vertical, @ViewBuilder content: () -> some View) -> some View {
+        if axes == .vertical {
+            VStack(content: content)
+        } else {
+            HStack(content: content)
         }
     }
 
